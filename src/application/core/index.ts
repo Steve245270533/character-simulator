@@ -18,8 +18,6 @@ export default class Core extends Emitter {
 	loader!: Loader;
 	world!: World;
 
-	steps_per_frame = 5;
-
 	constructor() {
 		super();
 
@@ -34,6 +32,7 @@ export default class Core extends Emitter {
 		this.camera = new PerspectiveCamera();
 		this.clock = new Clock();
 		this.orbit_controls = new OrbitControls(this.camera, this.renderer.domElement);
+		this.orbit_controls.enablePan = false;
 
 		this._initScene();
 		this._initCamera();
@@ -48,8 +47,9 @@ export default class Core extends Emitter {
 	render() {
 		this.renderer.setAnimationLoop(() => {
 			this.renderer.render(this.scene, this.camera);
-			const delta_time = Math.min(0.05, this.clock.getDelta()) / this.steps_per_frame;
+			const delta_time = Math.min(0.05, this.clock.getDelta());
 			this.world.update(delta_time);
+			this.orbit_controls.update();
 		});
 	}
 

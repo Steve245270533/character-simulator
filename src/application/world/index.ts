@@ -15,5 +15,8 @@ export default class World {
 	}
 
 	update(delta: number) {
+		if (this.environment.is_load_finished && this.environment.collider) {
+			this.character.update(delta, this.environment.collider);
+		}
 	}
 }

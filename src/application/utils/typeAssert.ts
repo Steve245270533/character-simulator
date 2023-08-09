@@ -7,3 +7,7 @@ export type BVHGeometry =  BufferGeometry<NormalBufferAttributes> & {boundsTree:
 export function isMesh(obj: unknown): obj is Mesh {
 	return (typeof obj === "object" && obj !== null && "isMesh" in obj);
 }
+
+export function isBVHGeometry(obj: unknown): obj is BVHGeometry {
+	return (typeof obj === "object" && obj !== null && "boundsTree" in obj);
+}
