@@ -1,7 +1,7 @@
-import Core from "@/application/core";
-import {AnimationAction, AnimationMixer, Box3, Line3, Matrix4, Mesh, Group, Object3D, Quaternion, Raycaster, Vector3} from "three";
+import Core from "../core";
+import {AnimationAction, AnimationMixer, Box3, Line3, Matrix4, Mesh, Group, Object3D, Quaternion, Raycaster, Vector3, BoxGeometry, MeshBasicMaterial} from "three";
 import {CHARACTER_IDLE_ACTION_URL, CHARACTER_JUMP_ACTION_URL, CHARACTER_URL, CHARACTER_WALK_ACTION_URL, ON_KEY_DOWN} from "@/application/Constants";
-import {isBVHGeometry, isMesh} from "@/application/utils/typeAssert";
+import {isBVHGeometry, isMesh} from "../utils/typeAssert";
 
 type PlayerParams = Partial<{
 	is_first_person: boolean,
@@ -36,6 +36,7 @@ export default class Character {
 		"jump": undefined
 	};
 	private character!: Group;
+	character_shape!: Mesh;
 	private capsule_info = {
 		radius: 0.5,
 		segment: new Line3(
@@ -98,6 +99,11 @@ export default class Character {
 
 		this.checkCollision(delta_time, scene_collider);
 
+		if (this.character_shape && this.character) {
+			this.character_shape.position.copy(this.character.position.clone());
+			this.character_shape.translateY(-0.5);
+		}
+
 		this.core.camera.position.sub(this.core.orbit_controls.target);
 		this.core.orbit_controls.target.copy(this.character.position);
 		this.core.camera.position.add(this.character.position);
@@ -136,7 +142,23 @@ export default class Character {
 
 		this.core.scene.add(this.character);
 
+		this._createCharacterShape();
+
 		this.reset();
+	}
+
+	private _createCharacterShape() {
+		this.character_shape = new Mesh(
+			new BoxGeometry(0.8, 1.7, 0.8),
+			new MeshBasicMaterial({
+				color: 0xff9900, // You can choose your desired wireframe color
+				wireframe: true
+			})
+		);
+
+		this.character_shape.visible = false;
+
+		this.core.scene.add(this.character_shape);
 	}
 
 	private _onKeyDown([key_code]: [keycode: string]) {

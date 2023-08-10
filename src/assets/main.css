@@ -1,6 +1,12 @@
+@font-face {
+	font-family: Zpix;
+	src: url("./font/zpix.woff2?v2021-03-21");
+}
+
 * {
 	margin: 0;
 	padding: 0;
+	font-family: Zpix, serif;
 }
 
 html,

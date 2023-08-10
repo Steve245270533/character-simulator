@@ -23,6 +23,8 @@
   },
   "dependencies": {
     "mitt": "^3.0.1",
+    "nes-vue": "^1.6.10",
+    "nes.css": "^2.3.0",
     "three": "^0.155.0",
     "three-mesh-bvh": "^0.6.3",
     "vue": "^3.3.4"

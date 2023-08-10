@@ -11,6 +11,8 @@ specifiers:
   eslint: ^8.45.0
   eslint-plugin-vue: ^9.15.1
   mitt: ^3.0.1
+  nes-vue: ^1.6.10
+  nes.css: ^2.3.0
   npm-run-all: ^4.1.5
   three: ^0.155.0
   three-mesh-bvh: ^0.6.3
@@ -21,6 +23,8 @@ specifiers:
 
 dependencies:
   mitt: 3.0.1
+  nes-vue: 1.6.10
+  nes.css: 2.3.0
   three: 0.155.0
   three-mesh-bvh: 0.6.3_three@0.155.0
   vue: 3.3.4
@@ -352,6 +356,10 @@ packages:
   /@rushstack/eslint-patch/1.3.2:
     resolution: {integrity: sha512-V+MvGwaHH03hYhY+k6Ef/xKd6RYlc4q8WBx+2ANmipHJcKuktNcI/NgEsJgdSUF6Lw32njT6OnrRsKYCdgHjYw==}
     dev: true
+
+  /@taiyuuki/utils/0.4.5:
+    resolution: {integrity: sha512-XLhkgshS9+O5cQX8P7WRiH2gRknOAt0KvWWZa1jetLsNJOx9mglnCbuiPoY/jZ+30wr//g6iEBGU+UROnuz4ig==}
+    dev: false
 
   /@tsconfig/node18/18.2.0:
     resolution: {integrity: sha512-yhxwIlFVSVcMym3O31HoMnRXpoenmpIxcj4Yoes2DUpe+xCJnA7ECQP1Vw889V0jTt/2nzvpLQ/UuMYCd3JPIg==}
@@ -1671,6 +1679,17 @@ packages:
   /natural-compare/1.4.0:
     resolution: {integrity: sha512-OWND8ei3VtNC9h7V60qff3SVobHr996CTwgxubgyQYEpg290h9J0buyECNNJexkFm5sOajh5G116RYA1c8ZMSw==}
     dev: true
+
+  /nes-vue/1.6.10:
+    resolution: {integrity: sha512-pykTrlAtlqOI30k24G3hwP3nzR+aZTw4P+5CoQ8sxDT8nxM7Mm087OLkLJnMo4U03GkBvfacVOVOfR9VrH0m1Q==}
+    dependencies:
+      '@taiyuuki/utils': 0.4.5
+    dev: false
+
+  /nes.css/2.3.0:
+    resolution: {integrity: sha512-lCFZs9vj3f5RVdbvTL/kSxiYsOARwSeAdJaMNo+bCgmWOO9x8ay7QpT4yQVKHy3r5Dttzd0uqVdpt3fvvx6EpQ==}
+    engines: {node: 10.x}
+    dev: false
 
   /nice-try/1.0.5:
     resolution: {integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==}

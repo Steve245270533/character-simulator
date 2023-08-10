@@ -21,3 +21,13 @@ export const ON_LOAD_PROGRESS = "on-load-progress";
 export const ON_LOAD_SCENE_FINISH = "on-load-scene-finish";
 export const ON_KEY_DOWN = "on-key-down";
 export const ON_KEY_UP = "on-key-up";
+export const ON_INTERSECT_TRIGGER = "on-intersect-trigger";
+export const ON_INTERSECT_TRIGGER_STOP = "on-intersect-trigger-stop";
+
+/*
+* NES Game Resources
+* */
+export const NES_GAME_SRC1 = new URL("../assets/nes/Super Mario Bros (JU).nes", import.meta.url).href;
+export const NES_GAME_SRC2 = new URL("../assets/nes/Super Mario Bros 3.nes", import.meta.url).href;
+export const NES_GAME_SRC3 = new URL("../assets/nes/Mighty Final Fight (USA).nes", import.meta.url).href;
+export const NES_GAME_SRC4 = new URL("../assets/nes/Mitsume ga Tooru (Japan).nes", import.meta.url).href;

@@ -1,7 +1,7 @@
 import Core from "../core";
 import {ON_KEY_DOWN, ON_KEY_UP} from "../Constants";
 
-type Keys = "KeyW" | "KeyS" | "KeyA" | "KeyD" | "KeyV" | "Space";
+type Keys = "KeyW" | "KeyS" | "KeyA" | "KeyD" | "KeyV" | "KeyF" | "Space";
 
 type KeySets = Keys[]
 
@@ -17,9 +17,11 @@ export default class Control {
 		"KeyA": false,
 		"KeyD": false,
 		"KeyV": false,
+		"KeyF": false,
 		"Space": false
 	};
-	private key_sets: KeySets = ["KeyW", "KeyS", "KeyA", "KeyD", "KeyV", "Space"];
+	enabled =  true;
+	private key_sets: KeySets = ["KeyW", "KeyS", "KeyA", "KeyD", "KeyV", "KeyF", "Space"];
 	private handleKeyDown: OmitThisParameter<(event: KeyboardEvent) => void>;
 	private handleKeyUp: OmitThisParameter<(event: KeyboardEvent) => void>;
 
@@ -36,14 +38,14 @@ export default class Control {
 	}
 
 	onKeyDown(event: KeyboardEvent) {
-		if (this.isAllowKey(event.code)) {
+		if (this.isAllowKey(event.code) && this.enabled) {
 			this.key_status[event.code] = true;
 			this.core.$emit(ON_KEY_DOWN, event.code);
 		}
 	}
 
 	onKeyUp(event: KeyboardEvent) {
-		if (this.isAllowKey(event.code)) {
+		if (this.isAllowKey(event.code) && this.enabled) {
 			this.key_status[event.code] = false;
 			this.core.$emit(ON_KEY_UP, event.code);
 		}
@@ -51,5 +53,11 @@ export default class Control {
 
 	isAllowKey(key: string): key is Keys {
 		return this.key_sets.includes(key as Keys);
+	}
+
+	resetStatus() {
+		for (const key of this.key_sets) {
+			this.key_status[key] = false;
+		}
 	}
 }
