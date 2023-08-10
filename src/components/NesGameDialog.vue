@@ -40,6 +40,11 @@ const game_data = ref({
 	url: ""
 });
 
+/**
+ * 打开游戏弹窗（注意：会避免持续触发打开弹窗，必须将弹窗关闭后重新打开）
+ * @param title 游戏标题
+ * @param url 游戏url地址
+ */
 const openDialog = (title: string, url: string) => {
 	if (is_show.value && game_data.value.title && game_data.value.url) return;
 

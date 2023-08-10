@@ -17,11 +17,18 @@ const is_show = ref(false);
 
 const msg = ref("");
 
+/**
+ * 打开通知弹窗
+ * @param message 通知弹窗信息
+ */
 const openNotify = (message: string) => {
 	msg.value = message;
 	is_show.value = true;
 };
 
+/**
+ * 关闭通知弹窗
+ */
 const closeNotify = () => {
 	msg.value = "";
 	is_show.value = false;

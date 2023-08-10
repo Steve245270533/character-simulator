@@ -93,25 +93,22 @@ export default class Character {
 	update(delta_time: number, scene_collider: Mesh | null) {
 		if (!scene_collider || !this.character) return;
 
-		this.updateControls();
+		this._updateControls();
 
-		this.updateCharacter(delta_time);
+		this._updateCharacter(delta_time);
 
-		this.checkCollision(delta_time, scene_collider);
+		this._checkCollision(delta_time, scene_collider);
 
-		if (this.character_shape && this.character) {
-			this.character_shape.position.copy(this.character.position.clone());
-			this.character_shape.translateY(-0.5);
-		}
+		this._updateCharacterShape();
 
 		this.core.camera.position.sub(this.core.orbit_controls.target);
 		this.core.orbit_controls.target.copy(this.character.position);
 		this.core.camera.position.add(this.character.position);
 
 		// 相机碰撞检测处理
-		this.checkCameraCollision([scene_collider]);
+		this._checkCameraCollision([scene_collider]);
 
-		this.checkReset();
+		this._checkReset();
 	}
 
 	private async _createCharacter() {
@@ -151,7 +148,7 @@ export default class Character {
 		this.character_shape = new Mesh(
 			new BoxGeometry(0.8, 1.7, 0.8),
 			new MeshBasicMaterial({
-				color: 0xff9900, // You can choose your desired wireframe color
+				color: 0xff9900,
 				wireframe: true
 			})
 		);
@@ -161,16 +158,23 @@ export default class Character {
 		this.core.scene.add(this.character_shape);
 	}
 
-	private _onKeyDown([key_code]: [keycode: string]) {
-		if (key_code === "Space") {
-			this.characterJump();
-		}
-		if (key_code === "KeyV") {
-			this.switchPersonView();
+	private _updateCharacterShape() {
+		if (this.character_shape && this.character) {
+			this.character_shape.position.copy(this.character.position.clone());
+			this.character_shape.translateY(-0.5);
 		}
 	}
 
-	private updateControls() {
+	private _onKeyDown([key_code]: [keycode: string]) {
+		if (key_code === "Space") {
+			this._characterJump();
+		}
+		if (key_code === "KeyV") {
+			this._switchPersonView();
+		}
+	}
+
+	private _updateControls() {
 		if (this.is_first_person) {
 			this.core.orbit_controls.maxPolarAngle = Math.PI;
 			this.core.orbit_controls.minDistance = 1e-4;
@@ -182,7 +186,7 @@ export default class Character {
 		}
 	}
 
-	private updateCharacter(delta_time: number) {
+	private _updateCharacter(delta_time: number) {
 		if (this.player_is_on_ground) {
 			this.velocity.y = delta_time * this.gravity;
 		} else {
@@ -285,7 +289,7 @@ export default class Character {
 		}
 	}
 
-	private checkCollision(delta_time: number, scene_collider: Mesh) {
+	private _checkCollision(delta_time: number, scene_collider: Mesh) {
 		// 根据碰撞来调整player位置
 		const capsule_info = this.capsule_info;
 		this.temp_box.makeEmpty();
@@ -349,7 +353,7 @@ export default class Character {
 		}
 	}
 
-	private checkCameraCollision(colliders: Object3D[]) {
+	private _checkCameraCollision(colliders: Object3D[]) {
 		if (!this.is_first_person) {
 			const ray_direction = new Vector3();
 			ray_direction.subVectors(this.core.camera.position, this.character.position).normalize();
@@ -369,7 +373,7 @@ export default class Character {
 		}
 	}
 
-	private checkReset() {
+	private _checkReset() {
 		if (this.character.position.y < this.reset_y) {
 			this.reset();
 		}
@@ -384,7 +388,7 @@ export default class Character {
 		this.core.orbit_controls.update();
 	}
 
-	private switchPersonView() {
+	private _switchPersonView() {
 		this.is_first_person = !this.is_first_person;
 		if (!this.is_first_person) {
 			this.character.visible = true;
@@ -394,7 +398,7 @@ export default class Character {
 		}
 	}
 
-	private characterJump() {
+	private _characterJump() {
 		if (this.player_is_on_ground) {
 			this.velocity.y = this.jump_height;
 			this.player_is_on_ground = false;

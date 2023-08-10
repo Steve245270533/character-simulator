@@ -57,6 +57,9 @@ export default class Environment {
 		});
 	}
 
+	/*
+	* Create lights and scene maps
+	* */
 	private _initSceneOtherEffects() {
 		const direction_light = new DirectionalLight(0xffffff, 1);
 		direction_light.position.set(-5, 25, -1);
@@ -86,6 +89,9 @@ export default class Environment {
 		this.core.scene.background = texture;
 	}
 
+	/*
+	* Creating an outdoor pool
+	* */
 	private _createWater() {
 		const water = new Water(new PlaneGeometry(8.5, 38, 1024, 1024), {
 			color: 0xffffff,
