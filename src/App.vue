@@ -44,6 +44,8 @@ const onKeyDown = ([key]: [key: string]) => {
 			core.control.enabled = false;
 			// 重置按键状态，防止键盘某个键锁死，持续驱动character更新
 			core.control.resetStatus();
+			// 进入游戏交互中后，关闭交互检测，优化性能
+			core.world.interaction_detection.disableDetection();
 			game_dialog_ref.value!.openDialog(intersect.userData.title!, intersect.userData.url!);
 		}
 	}
@@ -52,6 +54,7 @@ const onKeyDown = ([key]: [key: string]) => {
 const onCloseNesGameDialog = () => {
 	if (core) {
 		core.control.enabled = true;
+		core.world.interaction_detection.enableDetection();
 	}
 };
 

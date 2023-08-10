@@ -13,6 +13,7 @@ BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
 
 export default class InteractionDetection {
 	core: Core;
+	private enabled =  true;
 	private game_boxes: Game_Mesh[] = [];
 	private intersect: Game_Mesh | undefined = undefined;
 
@@ -52,7 +53,20 @@ export default class InteractionDetection {
 		return this.intersect;
 	}
 
+	disableDetection() {
+		this.enabled = false;
+		this.intersect = undefined;
+		this.core.$emit(ON_INTERSECT_TRIGGER_STOP);
+	}
+
+	enableDetection() {
+		this.enabled = true;
+		this.intersect = undefined;
+	}
+
 	update(character_mesh: Mesh) {
+		if (!this.enabled) return;
+
 		const intersect = this.game_boxes.find(box => {
 			if (isBVHGeometry(box.geometry)) {
 				// @ts-ignore
