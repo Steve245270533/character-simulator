@@ -7,18 +7,28 @@
   />
 
   <notify-tips ref="notify_ref" />
+
+  <load-progress
+    v-model="percentage"
+    :text="loading_text"
+  />
 </template>
 
 <script setup lang="ts">
+import LoadProgress from "@/components/LoadProgress.vue";
 import NesGameDialog from "@/components/NesGameDialog.vue";
 import NotifyTips from "@/components/NotifyTips.vue";
 import Core from "@/application/core";
 import {onMounted, ref} from "vue";
-import {ON_INTERSECT_TRIGGER, ON_INTERSECT_TRIGGER_STOP, ON_KEY_DOWN} from "@/application/Constants";
+import {ON_INTERSECT_TRIGGER, ON_INTERSECT_TRIGGER_STOP, ON_KEY_DOWN, ON_LOAD_PROGRESS} from "@/application/Constants";
 import type {Game_Mesh} from "@/application/InteractionDetection/types";
 
 const notify_ref = ref<InstanceType<typeof NotifyTips>>();
 const game_dialog_ref = ref<InstanceType<typeof NesGameDialog>>();
+
+// 加载相关
+const percentage = ref(0);
+const loading_text = ref("加载中...");
 
 let core: Core | undefined = undefined;
 
@@ -58,6 +68,22 @@ const onCloseNesGameDialog = () => {
 	}
 };
 
+const onLoadProgress = ([{url, loaded, total}]: [{url: string, loaded: number, total: number}]) => {
+	percentage.value = +(loaded / total * 100).toFixed(2);
+	if (/.*\.(blob|glb|fbx)$/i.test(url)) {
+		loading_text.value = "加载模型中...";
+	}
+	if (url.includes("wasm")) {
+		loading_text.value = "加载wasm中...";
+	}
+	if (/.*\.(jpg|png|jpeg)$/i.test(url)) {
+		loading_text.value = "加载图片素材中...";
+	}
+	if (/.*\.(m4a|mp3)$/i.test(url)) {
+		loading_text.value = "加载声音资源中...";
+	}
+};
+
 onMounted(() => {
 	core = new Core();
 	core.render();
@@ -65,6 +91,7 @@ onMounted(() => {
 	core.$on(ON_INTERSECT_TRIGGER, onIntersectTrigger);
 	core.$on(ON_INTERSECT_TRIGGER_STOP, onIntersectTriggerStop);
 	core.$on(ON_KEY_DOWN, onKeyDown);
+	core.$on(ON_LOAD_PROGRESS, onLoadProgress);
 });
 </script>
 
