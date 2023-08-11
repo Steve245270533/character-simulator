@@ -20,7 +20,7 @@ export default class Loader {
 		this.texture_loader = new TextureLoader();
 		this.audio_loader = new AudioLoader();
 		this.draco_loader = new DRACOLoader();
-		this.draco_loader.setDecoderPath("/draco/gltf/");
+		this.draco_loader.setDecoderPath("./draco/gltf/");
 		this.gltf_loader.setDRACOLoader(this.draco_loader);
 
 		DefaultLoadingManager.onProgress = (url, loaded, total) => {
