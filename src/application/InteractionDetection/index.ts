@@ -48,7 +48,7 @@ export default class InteractionDetection {
 		},
 		{
 			type: "music",
-			title: "当前播放：Midnight City",
+			title: "当前播放：Midnight City🎵",
 			position: new Vector3(0.5, 1.5, 9),
 			size: new Vector3(4, 2, 4),
 		}
