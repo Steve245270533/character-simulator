@@ -20,7 +20,7 @@
           <button
             type="button"
             class="nes-btn is-success"
-            @click="is_show = false"
+            @click="close"
           >
             Enter
           </button>
@@ -44,7 +44,14 @@ const props = withDefaults(
 	}
 );
 
+const emits = defineEmits(["on-enter"]);
+
 const is_show = ref(true);
+
+const close = () => {
+	is_show.value = false;
+	emits("on-enter");
+};
 </script>
 
 <style scoped>

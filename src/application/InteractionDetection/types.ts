@@ -1,9 +1,13 @@
-import type {Mesh} from "three";
+import type {Mesh, Vector3} from "three";
 
-export type Game_Mesh = Mesh & {
+export type InteractionType = "game" | "music"
+
+export type InteractionMesh = Mesh & {
 	userData: {
-		type?: string,
+		type?: InteractionType,
 		title?: string,
-		url?: string
+		url?: string,
+		size?: Vector3,
+		position?: Vector3
 	}
 }

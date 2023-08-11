@@ -2,12 +2,15 @@ import Core from "../core";
 import Environment from "../environment";
 import Character from "../character";
 import InteractionDetection from "../InteractionDetection";
+import Audio from "../audio";
+import {ON_LOAD_SCENE_FINISH} from "@/application/Constants";
 
 export default class World {
 	core: Core;
 	environment: Environment;
 	character: Character;
 	interaction_detection: InteractionDetection;
+	audio: Audio;
 
 	constructor() {
 		this.core = new Core();
@@ -15,6 +18,9 @@ export default class World {
 		this.environment = new Environment();
 		this.character = new Character();
 		this.interaction_detection = new InteractionDetection();
+		this.audio = new Audio();
+
+		this.core.$on(ON_LOAD_SCENE_FINISH, this._onLoadSceneFinish.bind(this));
 	}
 
 	update(delta: number) {
@@ -27,5 +33,9 @@ export default class World {
 		if (this.environment.is_load_finished && this.character.character_shape) {
 			this.interaction_detection.update(this.character.character_shape);
 		}
+	}
+
+	private _onLoadSceneFinish() {
+		this.audio.createAudio();
 	}
 }
