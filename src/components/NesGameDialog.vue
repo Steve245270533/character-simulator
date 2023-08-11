@@ -6,13 +6,9 @@
         class="nes-game-container"
       >
         <dialog class="nes-dialog is-dark is-rounded">
-          <nes-vue
-            :url="game_data.url"
-            width="512"
-            height="480"
-          />
+          <i class="snes-jp-logo title-logo" />
           <a class="nes-badge">
-            <span class="is-primary">{{ game_data.title }}</span>
+            <span class="is-warning">{{ game_data.title }}</span>
           </a>
           <button
             type="button"
@@ -21,6 +17,11 @@
           >
             X
           </button>
+          <nes-vue
+            :url="game_data.url"
+            width="512"
+            height="480"
+          />
         </dialog>
       </div>
     </transition>
@@ -98,6 +99,16 @@ defineExpose({
 	left: 50%;
 	top: 14px;
 	transform: translateX(-50%);
+}
+
+.nes-dialog .nes-badge span {
+	font-weight: bold;
+}
+
+.nes-dialog .title-logo {
+	position: absolute;
+	top: 6px;
+	left: 28%;
 }
 
 .fade-enter-active,
