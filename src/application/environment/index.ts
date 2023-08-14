@@ -7,9 +7,9 @@ import type {BVHGeometry} from "../utils/typeAssert";
 import {MeshBVH, StaticGeometryGenerator, type MeshBVHOptions} from "three-mesh-bvh";
 
 export default class Environment {
-	core: Core;
-	loader: Loader;
-	collision_scene: Group | undefined;
+	private core: Core;
+	private loader: Loader;
+	private collision_scene: Group | undefined;
 	collider: Mesh | undefined;
 	is_load_finished = false;
 
@@ -19,6 +19,9 @@ export default class Environment {
 		this._loadEnvironment();
 	}
 
+	/*
+	* 加载场景全部物体
+	* */
 	private async _loadEnvironment() {
 		try {
 			await this._loadCollisionScene();
@@ -31,6 +34,9 @@ export default class Environment {
 		}
 	}
 
+	/*
+	* 加载地图并绑定碰撞
+	* */
 	private _loadCollisionScene(): Promise<void> {
 		return new Promise(resolve => {
 			this.loader.gltf_loader.load(COLLISION_SCENE_URL, (gltf) => {
@@ -58,7 +64,7 @@ export default class Environment {
 	}
 
 	/*
-	* Create lights and scene maps
+	* 创建环境灯光、场景贴图、场景雾
 	* */
 	private _initSceneOtherEffects() {
 		const direction_light = new DirectionalLight(0xffffff, 1);
@@ -90,7 +96,7 @@ export default class Environment {
 	}
 
 	/*
-	* Creating an outdoor pool
+	* 创建户外水池
 	* */
 	private _createWater() {
 		const water = new Water(new PlaneGeometry(8.5, 38, 1024, 1024), {

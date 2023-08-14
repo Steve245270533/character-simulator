@@ -10,7 +10,7 @@ type KeyStatus = {
 };
 
 export default class Control {
-	core: Core;
+	private core: Core;
 	key_status: KeyStatus = {
 		"KeyW": false,
 		"KeyS": false,

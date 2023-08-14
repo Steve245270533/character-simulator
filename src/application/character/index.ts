@@ -24,7 +24,7 @@ const default_paramas: PlayerParams = {
 type Actions = "idle" | "walk" | "jump";
 
 export default class Character {
-	core: Core;
+	private core: Core;
 
 	private camera_raycaster: Raycaster = new Raycaster();
 
@@ -105,12 +105,14 @@ export default class Character {
 		this.core.orbit_controls.target.copy(this.character.position);
 		this.core.camera.position.add(this.character.position);
 
-		// 相机碰撞检测处理
 		this._checkCameraCollision([scene_collider]);
 
 		this._checkReset();
 	}
 
+	/*
+	* 添加角色模型&人物动画
+	* */
 	private async _createCharacter() {
 		const model = (await this.core.loader.gltf_loader.loadAsync(CHARACTER_URL)).scene;
 		const walk = (await this.core.loader.fbx_loader.loadAsync(CHARACTER_WALK_ACTION_URL)).animations[0];
@@ -144,6 +146,9 @@ export default class Character {
 		this.reset();
 	}
 
+	/*
+	* 创建角色包围盒
+	* */
 	private _createCharacterShape() {
 		this.character_shape = new Mesh(
 			new BoxGeometry(0.8, 1.7, 0.8),
@@ -158,6 +163,9 @@ export default class Character {
 		this.core.scene.add(this.character_shape);
 	}
 
+	/*
+	* 更新角色包围盒当前位置
+	* */
 	private _updateCharacterShape() {
 		if (this.character_shape && this.character) {
 			this.character_shape.position.copy(this.character.position.clone());
@@ -186,6 +194,9 @@ export default class Character {
 		}
 	}
 
+	/*
+	* 更新角色移动、方位朝向、动作
+	* */
 	private _updateCharacter(delta_time: number) {
 		if (this.player_is_on_ground) {
 			this.velocity.y = delta_time * this.gravity;
@@ -194,10 +205,8 @@ export default class Character {
 		}
 		this.character.position.addScaledVector(this.velocity, delta_time);
 
-		// 控制方向
 		this.updateDirection();
 
-		// 控制动作
 		this.updateAction(delta_time);
 
 		// 控制移动
@@ -225,6 +234,9 @@ export default class Character {
 		this.character.updateMatrixWorld();
 	}
 
+	/*
+	* 控制角色方向
+	* */
 	private updateDirection() {
 		if (!this.core.control.key_status["KeyW"] && !this.core.control.key_status["KeyS"] && !this.core.control.key_status["KeyA"] && !this.core.control.key_status["KeyD"] && !this.core.control.key_status["Space"]) {
 			return;
@@ -270,6 +282,9 @@ export default class Character {
 		this.character.quaternion.slerp(quaternion_helper, 0.6);
 	}
 
+	/*
+	* 控制角色动作
+	* */
 	private updateAction(delta_time: number) {
 		this.mixer?.update(delta_time);
 
@@ -289,6 +304,9 @@ export default class Character {
 		}
 	}
 
+	/*
+	* 计算角色与场景的碰撞
+	* */
 	private _checkCollision(delta_time: number, scene_collider: Mesh) {
 		// 根据碰撞来调整player位置
 		const capsule_info = this.capsule_info;
@@ -353,6 +371,9 @@ export default class Character {
 		}
 	}
 
+	/*
+	* 相机碰撞检测优化
+	* */
 	private _checkCameraCollision(colliders: Object3D[]) {
 		if (!this.is_first_person) {
 			const ray_direction = new Vector3();
@@ -373,6 +394,9 @@ export default class Character {
 		}
 	}
 
+	/*
+	* 掉落地图检测
+	* */
 	private _checkReset() {
 		if (this.character.position.y < this.reset_y) {
 			this.reset();
@@ -388,6 +412,9 @@ export default class Character {
 		this.core.orbit_controls.update();
 	}
 
+	/*
+	* 切换视角
+	* */
 	private _switchPersonView() {
 		this.is_first_person = !this.is_first_person;
 		if (!this.is_first_person) {
@@ -398,6 +425,9 @@ export default class Character {
 		}
 	}
 
+	/*
+	* 角色跳跃
+	* */
 	private _characterJump() {
 		if (this.player_is_on_ground) {
 			this.velocity.y = this.jump_height;

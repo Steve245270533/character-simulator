@@ -12,7 +12,7 @@ BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
 
 export default class InteractionDetection {
-	core: Core;
+	private core: Core;
 	private enabled =  true;
 	private intersect_boxes: InteractionMesh[] = [];
 	private intersect: InteractionMesh | undefined = undefined;
@@ -99,6 +99,9 @@ export default class InteractionDetection {
 		this.intersect = intersect;
 	}
 
+	/*
+	* 创建交互盒子
+	* */
 	private _createGameDetectBox() {
 		const material = new MeshBasicMaterial({color: 0xff0000, wireframe: true});
 

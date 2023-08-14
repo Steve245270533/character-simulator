@@ -4,16 +4,17 @@ import {PositionalAudioHelper} from "three/examples/jsm/helpers/PositionalAudioH
 import {AUDIO_URL} from "../Constants";
 
 export default class Audio {
-	core: Core;
-	positional_audio: PositionalAudio | undefined;
+	private core: Core;
+	private positional_audio: PositionalAudio | undefined;
 	private audio_mesh: Mesh | undefined;
-	private is_playing = false;
+	is_playing = false;
 
 	constructor() {
 		this.core = new Core();
+		this._createAudio();
 	}
 
-	async createAudio() {
+	private async _createAudio() {
 		this.audio_mesh = new Mesh(new PlaneGeometry(1, 1), new MeshBasicMaterial({color: 0xff0000}));
 		this.audio_mesh.position.set(0, 1, 10);
 		this.audio_mesh.rotation.y = Math.PI;

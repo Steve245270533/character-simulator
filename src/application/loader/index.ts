@@ -6,12 +6,12 @@ import Core from "../core";
 import {ON_LOAD_PROGRESS} from "../Constants";
 
 export default class Loader {
+	private core: Core;
 	gltf_loader: GLTFLoader;
 	fbx_loader: FBXLoader;
 	draco_loader: DRACOLoader;
 	texture_loader: TextureLoader;
 	audio_loader: AudioLoader;
-	core: Core;
 
 	constructor() {
 		this.core = new Core();
