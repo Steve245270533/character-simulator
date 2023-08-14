@@ -23,7 +23,6 @@ export const ON_KEY_DOWN = "on-key-down";
 export const ON_KEY_UP = "on-key-up";
 export const ON_INTERSECT_TRIGGER = "on-intersect-trigger";
 export const ON_INTERSECT_TRIGGER_STOP = "on-intersect-trigger-stop";
-export const ON_PLAY_AUDIO = "on-play-audio";
 
 /*
 * NES Game Resources
