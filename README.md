@@ -11,11 +11,11 @@
 :cn:[中文](./README_ZH.md)
 
 ## How to operate?
-walk: `W`/`S`/`A`/`D`  
+walk: `W`/`S`/`A`/`D`
 
 jump: `Space`
 
-view: `left mouse button`  
+view: `left mouse button`
 
 Switch person perspective: `V`
 
@@ -40,11 +40,11 @@ Although this project is developed using `Vue3` and `TypeScript`, the core funct
 |   |    │── character              # Character class (character model control)
 |   |    │── control                # Keyboard control class (keyboard key state management)
 |   |    │── core                   # Core base class (includes camera, renderer, scene, etc.)
+|   |    │── emitter                # Event emitter class (dispatch various events)
 |   |    │── environment            # Environment class (create map models, lights, scene textures)
-|   |    │── InteractionDetection   # Interaction detection class (intersection detection between character box and interaction box triggers)
+|   |    │── interactionDetection   # Interaction detection class (intersection detection between character box and interaction box triggers)
 |   |    │── loader                 # Loader class (fbx, glb, audio, etc. loader management)
 |   |    │── utils                  # Utility functions
-|   |    |    │── Emitter.ts        # Event emitter class (dispatch various events)
 |   |    |    └── typeAssert.ts     # Type inference utility functions
 |   |    │── world                  # Core game class (used to manage core elements in the game world, including environment, character, interaction detection, and audio components)
 |   |    └── Constants.ts           # Constant definitions (define model/texture/media resource paths, event dispatch names, etc.)
