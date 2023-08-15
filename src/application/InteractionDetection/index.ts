@@ -1,9 +1,9 @@
-import Core from "../core";
-import {BoxGeometry, BufferGeometry, Matrix4, Mesh, MeshBasicMaterial, Vector3} from "three";
+import {Scene, BoxGeometry, BufferGeometry, Matrix4, Mesh, MeshBasicMaterial, Vector3} from "three";
 import {acceleratedRaycast, computeBoundsTree, disposeBoundsTree} from "three-mesh-bvh";
-import {isBVHGeometry} from "@/application/utils/typeAssert";
-import {NES_GAME_SRC1, NES_GAME_SRC2, NES_GAME_SRC3, NES_GAME_SRC4, ON_INTERSECT_TRIGGER, ON_INTERSECT_TRIGGER_STOP} from "@/application/Constants";
+import {isBVHGeometry} from "../utils/typeAssert";
+import {NES_GAME_SRC1, NES_GAME_SRC2, NES_GAME_SRC3, NES_GAME_SRC4, ON_INTERSECT_TRIGGER, ON_INTERSECT_TRIGGER_STOP} from "../Constants";
 import type {InteractionMesh} from "./types";
+import Emitter from "../Emitter";
 
 Mesh.prototype.raycast = acceleratedRaycast;
 // @ts-ignore
@@ -11,8 +11,15 @@ BufferGeometry.prototype.computeBoundsTree = computeBoundsTree;
 // @ts-ignore
 BufferGeometry.prototype.disposeBoundsTree = disposeBoundsTree;
 
+interface InteractionDetectionParams {
+	scene: Scene;
+	emitter: Emitter;
+}
+
 export default class InteractionDetection {
-	private core: Core;
+	private scene: Scene;
+	private emitter: Emitter;
+
 	private enabled =  true;
 	private intersect_boxes: InteractionMesh[] = [];
 	private intersect: InteractionMesh | undefined = undefined;
@@ -54,8 +61,13 @@ export default class InteractionDetection {
 		}
 	];
 
-	constructor() {
-		this.core = new Core();
+	constructor({
+		scene,
+		emitter
+	}: InteractionDetectionParams) {
+		this.scene = scene;
+		this.emitter = emitter;
+
 		this._createGameDetectBox();
 	}
 
@@ -66,7 +78,7 @@ export default class InteractionDetection {
 	disableDetection() {
 		this.enabled = false;
 		this.intersect = undefined;
-		this.core.$emit(ON_INTERSECT_TRIGGER_STOP);
+		this.emitter.$emit(ON_INTERSECT_TRIGGER_STOP);
 	}
 
 	enableDetection() {
@@ -89,11 +101,11 @@ export default class InteractionDetection {
 		});
 
 		if (intersect && intersect.userData.title !== this.intersect?.userData?.title) {
-			this.core.$emit(ON_INTERSECT_TRIGGER, intersect.userData);
+			this.emitter.$emit(ON_INTERSECT_TRIGGER, intersect.userData);
 		}
 
 		if (!intersect && this.intersect) {
-			this.core.$emit(ON_INTERSECT_TRIGGER_STOP);
+			this.emitter.$emit(ON_INTERSECT_TRIGGER_STOP);
 		}
 
 		this.intersect = intersect;
@@ -115,7 +127,7 @@ export default class InteractionDetection {
 			box.position.copy(i_box.position!);
 			// @ts-ignore
 			box.geometry.computeBoundsTree();
-			this.core.scene.add(box);
+			this.scene.add(box);
 			box.userData = {
 				type: i_box.type,
 				title: i_box.title,

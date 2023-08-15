@@ -1,23 +1,75 @@
-import Core from "../core";
 import Environment from "../environment";
 import Character from "../character";
 import InteractionDetection from "../InteractionDetection";
 import Audio from "../audio";
+import {PerspectiveCamera, Scene} from "three";
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
+import Control from "../control";
+import Loader from "../loader";
+import Emitter from "../Emitter";
+
+interface WorldParams {
+	scene: Scene;
+	camera: PerspectiveCamera;
+	orbit_controls: OrbitControls;
+	control: Control;
+	loader: Loader;
+	emitter: Emitter;
+}
 
 export default class World {
-	private core: Core;
+	private readonly scene: Scene;
+	private readonly camera: PerspectiveCamera;
+	private readonly orbit_controls: OrbitControls;
+	private readonly control: Control;
+	private readonly loader: Loader;
+	private readonly emitter: Emitter;
+
 	environment: Environment;
 	character: Character;
 	interaction_detection: InteractionDetection;
 	audio: Audio;
 
-	constructor() {
-		this.core = new Core();
+	constructor({
+		scene,
+		camera,
+		orbit_controls,
+		control,
+		loader,
+		emitter
+	}: WorldParams) {
+		this.scene = scene;
+		this.camera = camera;
+		this.orbit_controls = orbit_controls;
+		this.control = control;
+		this.loader = loader;
+		this.emitter = emitter;
 
-		this.environment = new Environment();
-		this.character = new Character();
-		this.interaction_detection = new InteractionDetection();
-		this.audio = new Audio();
+		this.environment = new Environment({
+			scene: this.scene,
+			loader: this.loader,
+			emitter: this.emitter
+		});
+
+		this.character = new Character({
+			scene: this.scene,
+			camera: this.camera,
+			orbit_controls: this.orbit_controls,
+			control: this.control,
+			loader: this.loader,
+			emitter: this.emitter
+		});
+
+		this.interaction_detection = new InteractionDetection({
+			scene: this.scene,
+			emitter: this.emitter
+		});
+
+		this.audio = new Audio({
+			scene: this.scene,
+			camera: this.camera,
+			loader: this.loader
+		});
 	}
 
 	update(delta: number) {

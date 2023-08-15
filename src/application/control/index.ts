@@ -1,5 +1,5 @@
-import Core from "../core";
 import {ON_KEY_DOWN, ON_KEY_UP} from "../Constants";
+import Emitter from "../Emitter";
 
 type Keys = "KeyW" | "KeyS" | "KeyA" | "KeyD" | "KeyV" | "KeyF" | "Space";
 
@@ -9,8 +9,13 @@ type KeyStatus = {
 	[key in Keys]: boolean;
 };
 
+interface ControlParams {
+	emitter: Emitter;
+}
+
 export default class Control {
-	private core: Core;
+	private emitter: Emitter;
+
 	key_status: KeyStatus = {
 		"KeyW": false,
 		"KeyS": false,
@@ -22,11 +27,14 @@ export default class Control {
 	};
 	private is_enabled =  false;
 	private key_sets: KeySets = ["KeyW", "KeyS", "KeyA", "KeyD", "KeyV", "KeyF", "Space"];
-	private handleKeyDown: OmitThisParameter<(event: KeyboardEvent) => void>;
-	private handleKeyUp: OmitThisParameter<(event: KeyboardEvent) => void>;
+	private readonly handleKeyDown: OmitThisParameter<(event: KeyboardEvent) => void>;
+	private readonly handleKeyUp: OmitThisParameter<(event: KeyboardEvent) => void>;
 
-	constructor() {
-		this.core = new Core();
+	constructor({
+		emitter
+	}: ControlParams) {
+		this.emitter = emitter;
+
 		this.handleKeyDown = this.onKeyDown.bind(this);
 		this.handleKeyUp = this.onKeyUp.bind(this);
 		this._bindEvent();
@@ -40,14 +48,14 @@ export default class Control {
 	onKeyDown(event: KeyboardEvent) {
 		if (this.isAllowKey(event.code) && this.is_enabled) {
 			this.key_status[event.code] = true;
-			this.core.$emit(ON_KEY_DOWN, event.code);
+			this.emitter.$emit(ON_KEY_DOWN, event.code);
 		}
 	}
 
 	onKeyUp(event: KeyboardEvent) {
 		if (this.isAllowKey(event.code) && this.is_enabled) {
 			this.key_status[event.code] = false;
-			this.core.$emit(ON_KEY_UP, event.code);
+			this.emitter.$emit(ON_KEY_UP, event.code);
 		}
 	}
 

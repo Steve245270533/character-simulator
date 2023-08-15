@@ -1,9 +1,13 @@
-import Core from "../core";
-import {AnimationAction, AnimationMixer, Box3, Line3, Matrix4, Mesh, Group, Object3D, Quaternion, Raycaster, Vector3, BoxGeometry, MeshBasicMaterial} from "three";
+import {Scene, PerspectiveCamera, AnimationAction, AnimationMixer, Box3, Line3, Matrix4, Mesh, Group, Object3D, Quaternion, Raycaster, Vector3, BoxGeometry, MeshBasicMaterial} from "three";
 import {CHARACTER_IDLE_ACTION_URL, CHARACTER_JUMP_ACTION_URL, CHARACTER_URL, CHARACTER_WALK_ACTION_URL, ON_KEY_DOWN} from "@/application/Constants";
 import {isBVHGeometry, isMesh} from "../utils/typeAssert";
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
+import Control from "../control";
+import Emitter from "../Emitter";
+import Loader from "../loader";
 
-type PlayerParams = Partial<{
+// 角色相关可选配置项
+type OptionalParams = Partial<{
 	is_first_person: boolean,
 	reset_position: Vector3,
 	reset_y: number,
@@ -12,7 +16,19 @@ type PlayerParams = Partial<{
 	gravity: number
 }>
 
-const default_paramas: PlayerParams = {
+type PlayerParams = {
+	scene: Scene,
+	camera: PerspectiveCamera,
+	orbit_controls: OrbitControls,
+	control: Control,
+	loader: Loader,
+	emitter: Emitter
+} & OptionalParams
+
+type Actions = "idle" | "walk" | "jump";
+
+// 可选配置项默认值
+const default_params: OptionalParams = {
 	is_first_person: false,
 	reset_position: new Vector3(-10, 2.5, 10),
 	reset_y: -25,
@@ -21,10 +37,13 @@ const default_paramas: PlayerParams = {
 	gravity: -30
 };
 
-type Actions = "idle" | "walk" | "jump";
-
 export default class Character {
-	private core: Core;
+	private scene: Scene;
+	private camera: PerspectiveCamera;
+	private orbit_controls: OrbitControls;
+	private control: Control;
+	private loader: Loader;
+	private emitter: Emitter;
 
 	private camera_raycaster: Raycaster = new Raycaster();
 
@@ -64,17 +83,17 @@ export default class Character {
 	private temp_mat = new Matrix4();
 	private temp_segment = new Line3();
 
-	constructor(params?: PlayerParams) {
-		this.core = new Core();
-
-		if (params) {
-			params = {
-				...default_paramas,
-				...params
-			};
-		} else {
-			params = default_paramas;
-		}
+	constructor(params: PlayerParams) {
+		params = {
+			...default_params,
+			...params
+		};
+		this.scene = params.scene;
+		this.camera = params.camera;
+		this.orbit_controls = params.orbit_controls;
+		this.control = params.control;
+		this.emitter = params.emitter;
+		this.loader = params.loader;
 
 		this.camera_raycaster.far = 5;
 
@@ -87,7 +106,7 @@ export default class Character {
 
 		this._createCharacter();
 
-		this.core.$on(ON_KEY_DOWN, this._onKeyDown.bind(this));
+		this.emitter.$on(ON_KEY_DOWN, this._onKeyDown.bind(this));
 	}
 
 	update(delta_time: number, scene_collider: Mesh | null) {
@@ -101,9 +120,9 @@ export default class Character {
 
 		this._updateCharacterShape();
 
-		this.core.camera.position.sub(this.core.orbit_controls.target);
-		this.core.orbit_controls.target.copy(this.character.position);
-		this.core.camera.position.add(this.character.position);
+		this.camera.position.sub(this.orbit_controls.target);
+		this.orbit_controls.target.copy(this.character.position);
+		this.camera.position.add(this.character.position);
 
 		this._checkCameraCollision([scene_collider]);
 
@@ -114,10 +133,10 @@ export default class Character {
 	* 添加角色模型&人物动画
 	* */
 	private async _createCharacter() {
-		const model = (await this.core.loader.gltf_loader.loadAsync(CHARACTER_URL)).scene;
-		const walk = (await this.core.loader.fbx_loader.loadAsync(CHARACTER_WALK_ACTION_URL)).animations[0];
-		const idle = (await this.core.loader.fbx_loader.loadAsync(CHARACTER_IDLE_ACTION_URL)).animations[0];
-		const jump = (await this.core.loader.fbx_loader.loadAsync(CHARACTER_JUMP_ACTION_URL)).animations[0];
+		const model = (await this.loader.gltf_loader.loadAsync(CHARACTER_URL)).scene;
+		const walk = (await this.loader.fbx_loader.loadAsync(CHARACTER_WALK_ACTION_URL)).animations[0];
+		const idle = (await this.loader.fbx_loader.loadAsync(CHARACTER_IDLE_ACTION_URL)).animations[0];
+		const jump = (await this.loader.fbx_loader.loadAsync(CHARACTER_JUMP_ACTION_URL)).animations[0];
 		this.character = model;
 
 		this.character.scale.set(0.1, 0.1, 0.1);
@@ -139,7 +158,7 @@ export default class Character {
 			}
 		});
 
-		this.core.scene.add(this.character);
+		this.scene.add(this.character);
 
 		this._createCharacterShape();
 
@@ -160,7 +179,7 @@ export default class Character {
 
 		this.character_shape.visible = false;
 
-		this.core.scene.add(this.character_shape);
+		this.scene.add(this.character_shape);
 	}
 
 	/*
@@ -184,13 +203,13 @@ export default class Character {
 
 	private _updateControls() {
 		if (this.is_first_person) {
-			this.core.orbit_controls.maxPolarAngle = Math.PI;
-			this.core.orbit_controls.minDistance = 1e-4;
-			this.core.orbit_controls.maxDistance = 1e-4;
+			this.orbit_controls.maxPolarAngle = Math.PI;
+			this.orbit_controls.minDistance = 1e-4;
+			this.orbit_controls.maxDistance = 1e-4;
 		} else {
-			// this.core.orbit_controls.maxPolarAngle = Math.PI / 2;
-			this.core.orbit_controls.minDistance = 2;
-			this.core.orbit_controls.maxDistance = 5;
+			// this.orbit_controls.maxPolarAngle = Math.PI / 2;
+			this.orbit_controls.minDistance = 2;
+			this.orbit_controls.maxDistance = 5;
 		}
 	}
 
@@ -210,23 +229,23 @@ export default class Character {
 		this.updateAction(delta_time);
 
 		// 控制移动
-		const angle = this.core.orbit_controls.getAzimuthalAngle();
-		if (this.core.control.key_status["KeyW"]) {
+		const angle = this.orbit_controls.getAzimuthalAngle();
+		if (this.control.key_status["KeyW"]) {
 			this.temp_vector.set(0, 0, -1).applyAxisAngle(this.up_vector, angle);
 			this.character.position.addScaledVector(this.temp_vector, this.speed * delta_time);
 		}
 
-		if (this.core.control.key_status["KeyS"]) {
+		if (this.control.key_status["KeyS"]) {
 			this.temp_vector.set(0, 0, 1).applyAxisAngle(this.up_vector, angle);
 			this.character.position.addScaledVector(this.temp_vector, this.speed * delta_time);
 		}
 
-		if (this.core.control.key_status["KeyA"]) {
+		if (this.control.key_status["KeyA"]) {
 			this.temp_vector.set(-1, 0, 0).applyAxisAngle(this.up_vector, angle);
 			this.character.position.addScaledVector(this.temp_vector, this.speed * delta_time);
 		}
 
-		if (this.core.control.key_status["KeyD"]) {
+		if (this.control.key_status["KeyD"]) {
 			this.temp_vector.set(1, 0, 0).applyAxisAngle(this.up_vector, angle);
 			this.character.position.addScaledVector(this.temp_vector, this.speed * delta_time);
 		}
@@ -238,7 +257,7 @@ export default class Character {
 	* 控制角色方向
 	* */
 	private updateDirection() {
-		if (!this.core.control.key_status["KeyW"] && !this.core.control.key_status["KeyS"] && !this.core.control.key_status["KeyA"] && !this.core.control.key_status["KeyD"] && !this.core.control.key_status["Space"]) {
+		if (!this.control.key_status["KeyW"] && !this.control.key_status["KeyS"] && !this.control.key_status["KeyA"] && !this.control.key_status["KeyD"] && !this.control.key_status["Space"]) {
 			return;
 		}
 
@@ -246,35 +265,35 @@ export default class Character {
 
 		let direction_offset = typeof this.last_direction_angle === "number" ? this.last_direction_angle : Math.PI; // w
 
-		if (this.core.control.key_status["KeyS"]) {
-			if (this.core.control.key_status["KeyA"] && this.core.control.key_status["KeyD"]) {
+		if (this.control.key_status["KeyS"]) {
+			if (this.control.key_status["KeyA"] && this.control.key_status["KeyD"]) {
 				direction_offset = -Math.PI / 4 + Math.PI / 4; // s+a+d
-			} else if (this.core.control.key_status["KeyA"]) {
+			} else if (this.control.key_status["KeyA"]) {
 				direction_offset = -Math.PI / 4; // s+a
-			} else if (this.core.control.key_status["KeyD"]) {
+			} else if (this.control.key_status["KeyD"]) {
 				direction_offset = Math.PI / 4; // s+d
 			} else {
 				direction_offset = -Math.PI / 4 + Math.PI / 4; // s
 			}
-		} else if (this.core.control.key_status["KeyW"]) {
-			if (this.core.control.key_status["KeyA"] && this.core.control.key_status["KeyD"]) { // w+a+d
+		} else if (this.control.key_status["KeyW"]) {
+			if (this.control.key_status["KeyA"] && this.control.key_status["KeyD"]) { // w+a+d
 				direction_offset = Math.PI;
-			} else if (this.core.control.key_status["KeyA"]) {
+			} else if (this.control.key_status["KeyA"]) {
 				direction_offset = -Math.PI / 4 - Math.PI / 2; // w+a
-			} else if (this.core.control.key_status["KeyD"]) {
+			} else if (this.control.key_status["KeyD"]) {
 				direction_offset = Math.PI / 4 + Math.PI / 2; // w+d
 			} else {
 				direction_offset = Math.PI;
 			}
-		} else if (this.core.control.key_status["KeyA"]) {
+		} else if (this.control.key_status["KeyA"]) {
 			direction_offset = -Math.PI / 2; // a
-		} else if (this.core.control.key_status["KeyD"]) {
+		} else if (this.control.key_status["KeyD"]) {
 			direction_offset = Math.PI / 2; // d
 		}
 		this.last_direction_angle = direction_offset;
 
 		// calculate towards camera direction
-		const angle_y_camera_direction = Math.atan2((this.core.camera.position.x - this.character.position.x), (this.core.camera.position.z - this.character.position.z));
+		const angle_y_camera_direction = Math.atan2((this.camera.position.x - this.character.position.x), (this.camera.position.z - this.character.position.z));
 
 		// rotate model
 		this.rotate_quarternion.setFromAxisAngle(this.rotate_angle, angle_y_camera_direction + direction_offset);
@@ -289,7 +308,7 @@ export default class Character {
 		this.mixer?.update(delta_time);
 
 		let next_action: Actions;
-		if (this.player_is_on_ground && (this.core.control.key_status["KeyW"] || this.core.control.key_status["KeyS"] || this.core.control.key_status["KeyA"] || this.core.control.key_status["KeyD"])) {
+		if (this.player_is_on_ground && (this.control.key_status["KeyW"] || this.control.key_status["KeyS"] || this.control.key_status["KeyA"] || this.control.key_status["KeyD"])) {
 			next_action = "walk";
 		} else if (this.player_is_on_ground) {
 			next_action = "idle";
@@ -377,7 +396,7 @@ export default class Character {
 	private _checkCameraCollision(colliders: Object3D[]) {
 		if (!this.is_first_person) {
 			const ray_direction = new Vector3();
-			ray_direction.subVectors(this.core.camera.position, this.character.position).normalize();
+			ray_direction.subVectors(this.camera.position, this.character.position).normalize();
 			this.camera_raycaster.set(this.character.position, ray_direction);
 			const intersects = this.camera_raycaster.intersectObjects(colliders);
 			if (intersects.length) {
@@ -385,11 +404,11 @@ export default class Character {
 				const offset = new Vector3(); // 定义一个向前移动的偏移量
 				offset.copy(ray_direction).multiplyScalar(-0.5); // 计算偏移量，这里的distance是想要向前移动的距离
 				const new_position = new Vector3().addVectors(intersects[0].point, offset); // 计算新的相机位置
-				this.core.camera.position.copy(new_position);
+				this.camera.position.copy(new_position);
 
-				this.core.orbit_controls.minDistance = 0;
+				this.orbit_controls.minDistance = 0;
 			} else {
-				this.core.orbit_controls.minDistance = 2;
+				this.orbit_controls.minDistance = 2;
 			}
 		}
 	}
@@ -406,10 +425,10 @@ export default class Character {
 	reset() {
 		this.velocity.set(0, 0, 0);
 		this.character.position.copy(this.reset_position);
-		this.core.camera.position.sub(this.core.orbit_controls.target);
-		this.core.orbit_controls.target.copy(this.character.position);
-		this.core.camera.position.add(this.character.position);
-		this.core.orbit_controls.update();
+		this.camera.position.sub(this.orbit_controls.target);
+		this.orbit_controls.target.copy(this.character.position);
+		this.camera.position.add(this.character.position);
+		this.orbit_controls.update();
 	}
 
 	/*
@@ -419,7 +438,7 @@ export default class Character {
 		this.is_first_person = !this.is_first_person;
 		if (!this.is_first_person) {
 			this.character.visible = true;
-			this.core.camera.position.sub(this.core.orbit_controls.target).normalize().multiplyScalar(5).add(this.core.orbit_controls.target);
+			this.camera.position.sub(this.orbit_controls.target).normalize().multiplyScalar(5).add(this.orbit_controls.target);
 		} else {
 			this.character.visible = false;
 		}

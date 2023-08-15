@@ -1,16 +1,32 @@
-import {Mesh, MeshBasicMaterial, PlaneGeometry, PositionalAudio, AudioListener} from "three";
-import Core from "../core";
+import {Scene, Mesh, MeshBasicMaterial, PlaneGeometry, PositionalAudio, AudioListener, PerspectiveCamera} from "three";
 import {PositionalAudioHelper} from "three/examples/jsm/helpers/PositionalAudioHelper";
 import {AUDIO_URL} from "../Constants";
+import Loader from "../loader";
+
+interface AudioParams {
+	scene: Scene;
+	camera: PerspectiveCamera;
+	loader: Loader;
+}
 
 export default class Audio {
-	private core: Core;
+	private scene: Scene;
+	private camera: PerspectiveCamera;
+	private loader: Loader;
+
 	private positional_audio: PositionalAudio | undefined;
 	private audio_mesh: Mesh | undefined;
 	is_playing = false;
 
-	constructor() {
-		this.core = new Core();
+	constructor({
+		scene,
+		camera,
+		loader
+	}: AudioParams) {
+		this.scene = scene;
+		this.camera = camera;
+		this.loader = loader;
+
 		this._createAudio();
 	}
 
@@ -19,15 +35,15 @@ export default class Audio {
 		this.audio_mesh.position.set(0, 1, 10);
 		this.audio_mesh.rotation.y = Math.PI;
 		this.audio_mesh.visible = false;
-		this.core.scene.add(this.audio_mesh);
+		this.scene.add(this.audio_mesh);
 
 		const listener = new AudioListener();
 
-		this.core.camera.add(listener);
+		this.camera.add(listener);
 		this.positional_audio = new PositionalAudio(listener);
 		this.audio_mesh.add(this.positional_audio);
 
-		const buffer = await this.core.loader.audio_loader.loadAsync(AUDIO_URL);
+		const buffer = await this.loader.audio_loader.loadAsync(AUDIO_URL);
 		this.positional_audio.setBuffer(buffer);
 		this.positional_audio.setVolume(0.5);
 		this.positional_audio.setRefDistance(2);

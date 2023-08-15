@@ -1,21 +1,35 @@
-import Core from "../core";
 import Loader from "../loader";
 import {COLLISION_SCENE_URL, ON_LOAD_SCENE_FINISH, SCENE_BACKGROUND_TEXTURE, WATER_NORMAL1_TEXTURE, WATER_NORMAL2_TEXTURE} from "../Constants";
-import {AmbientLight, DirectionalLight, EquirectangularReflectionMapping, Fog, Group, HemisphereLight, Mesh, PlaneGeometry, Vector2} from "three";
+import {Scene, AmbientLight, DirectionalLight, EquirectangularReflectionMapping, Fog, Group, HemisphereLight, Mesh, PlaneGeometry, Vector2} from "three";
 import {Water} from "three/examples/jsm/objects/Water2";
 import type {BVHGeometry} from "../utils/typeAssert";
 import {MeshBVH, StaticGeometryGenerator, type MeshBVHOptions} from "three-mesh-bvh";
+import Emitter from "../Emitter";
+
+interface EnvironmentParams {
+	scene: Scene;
+	loader: Loader;
+	emitter: Emitter
+}
 
 export default class Environment {
-	private core: Core;
+	private scene: Scene;
 	private loader: Loader;
+	private emitter: Emitter;
+
 	private collision_scene: Group | undefined;
 	collider: Mesh | undefined;
 	is_load_finished = false;
 
-	constructor() {
-		this.core = new Core();
-		this.loader = this.core.loader;
+	constructor({
+		scene,
+		loader,
+		emitter,
+	}: EnvironmentParams) {
+		this.scene = scene;
+		this.loader = loader;
+		this.emitter = emitter;
+
 		this._loadEnvironment();
 	}
 
@@ -28,7 +42,7 @@ export default class Environment {
 			this._initSceneOtherEffects();
 			this._createWater();
 			this.is_load_finished = true;
-			this.core.$emit(ON_LOAD_SCENE_FINISH);
+			this.emitter.$emit(ON_LOAD_SCENE_FINISH);
 		} catch (e) {
 			console.log(e);
 		}
@@ -56,7 +70,7 @@ export default class Environment {
 				generate_geometry.boundsTree = new MeshBVH(generate_geometry, {lazyGeneration: false} as MeshBVHOptions);
 
 				this.collider = new Mesh(generate_geometry);
-				this.core.scene.add(this.collision_scene);
+				this.scene.add(this.collision_scene);
 
 				resolve();
 			});
@@ -80,19 +94,19 @@ export default class Environment {
 		direction_light.shadow.mapSize.height = 1024;
 		direction_light.shadow.radius = 2;
 		direction_light.shadow.bias = -0.00006;
-		this.core.scene.add(direction_light);
+		this.scene.add(direction_light);
 
 		const fill_light = new HemisphereLight(0xffffff, 0xe49959, 1);
 		fill_light.position.set(2, 1, 1);
-		this.core.scene.add(fill_light);
+		this.scene.add(fill_light);
 
-		this.core.scene.add(new AmbientLight(0xffffff, 1));
+		this.scene.add(new AmbientLight(0xffffff, 1));
 
-		this.core.scene.fog = new Fog(0xcccccc, 10, 900);
+		this.scene.fog = new Fog(0xcccccc, 10, 900);
 
-		const texture = this.core.loader.texture_loader.load(SCENE_BACKGROUND_TEXTURE);
+		const texture = this.loader.texture_loader.load(SCENE_BACKGROUND_TEXTURE);
 		texture.mapping = EquirectangularReflectionMapping;
-		this.core.scene.background = texture;
+		this.scene.background = texture;
 	}
 
 	/*
@@ -107,11 +121,11 @@ export default class Environment {
 			textureWidth: 1024,
 			flowSpeed: 0.001,
 			reflectivity: 0.05,
-			normalMap0: this.core.loader.texture_loader.load(WATER_NORMAL1_TEXTURE),
-			normalMap1: this.core.loader.texture_loader.load(WATER_NORMAL2_TEXTURE)
+			normalMap0: this.loader.texture_loader.load(WATER_NORMAL1_TEXTURE),
+			normalMap1: this.loader.texture_loader.load(WATER_NORMAL2_TEXTURE)
 		});
 		water.position.set(-1, 0, -30.5);
 		water.rotation.x = -(Math.PI / 2);
-		this.core.scene.add(water);
+		this.scene.add(water);
 	}
 }

@@ -1,32 +1,23 @@
 import {ACESFilmicToneMapping, Clock, Color, PerspectiveCamera, Scene, SRGBColorSpace, VSMShadowMap, WebGLRenderer} from "three";
 import World from "../world";
-import Emitter from "../utils/Emitter";
+import Emitter from "../Emitter";
 import Loader from "../loader";
 import Control from "../control";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
-let instance: Core | null = null;
+export default class Core {
+	scene: Scene;
+	renderer: WebGLRenderer;
+	camera: PerspectiveCamera;
+	clock: Clock;
+	orbit_controls: OrbitControls;
 
-export default class Core extends Emitter {
-	scene!: Scene;
-	renderer!: WebGLRenderer;
-	camera!: PerspectiveCamera;
-	clock!: Clock;
-	orbit_controls!: OrbitControls;
-
-	control!: Control;
-	loader!: Loader;
-	world!: World;
+	emitter: Emitter;
+	control: Control;
+	loader: Loader;
+	world: World;
 
 	constructor() {
-		super();
-
-		// Singleton
-		if (instance) {
-			return instance;
-		}
-		instance = this;
-
 		this.scene = new Scene();
 		this.renderer = new WebGLRenderer({antialias: true});
 		this.camera = new PerspectiveCamera();
@@ -39,9 +30,24 @@ export default class Core extends Emitter {
 		this._initRenderer();
 		this._initResponsiveResize();
 
-		this.control = new Control();
-		this.loader = new Loader();
-		this.world = new World();
+		this.emitter = new Emitter();
+
+		this.control = new Control({
+			emitter: this.emitter
+		});
+
+		this.loader = new Loader({
+			emitter: this.emitter
+		});
+
+		this.world = new World({
+			scene: this.scene,
+			camera: this.camera,
+			orbit_controls: this.orbit_controls,
+			control: this.control,
+			loader: this.loader,
+			emitter: this.emitter
+		});
 	}
 
 	render() {

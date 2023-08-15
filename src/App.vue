@@ -107,6 +107,8 @@ const onEnterApp = () => {
 		core.control.enabled();
 		// 音频自动播放受限于网页的初始化交互，因此进入后播放即可
 		core.world.audio.playAudio();
+		// 注销应用加载监听事件
+		core.emitter.$off(ON_LOAD_PROGRESS);
 	}
 };
 
@@ -114,10 +116,10 @@ onMounted(() => {
 	core = new Core();
 	core.render();
 
-	core.$on(ON_INTERSECT_TRIGGER, onIntersectTrigger);
-	core.$on(ON_INTERSECT_TRIGGER_STOP, onIntersectTriggerStop);
-	core.$on(ON_KEY_DOWN, onKeyDown);
-	core.$on(ON_LOAD_PROGRESS, onLoadProgress);
+	core.emitter.$on(ON_INTERSECT_TRIGGER, onIntersectTrigger);
+	core.emitter.$on(ON_INTERSECT_TRIGGER_STOP, onIntersectTriggerStop);
+	core.emitter.$on(ON_KEY_DOWN, onKeyDown);
+	core.emitter.$on(ON_LOAD_PROGRESS, onLoadProgress);
 });
 </script>
 
