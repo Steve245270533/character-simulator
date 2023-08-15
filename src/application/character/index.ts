@@ -3,7 +3,7 @@ import {CHARACTER_IDLE_ACTION_URL, CHARACTER_JUMP_ACTION_URL, CHARACTER_URL, CHA
 import {isBVHGeometry, isMesh} from "../utils/typeAssert";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import Control from "../control";
-import Emitter from "../Emitter";
+import Emitter from "../emitter";
 import Loader from "../loader";
 
 // 角色相关可选配置项

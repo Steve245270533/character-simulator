@@ -1,5 +1,5 @@
 import {ON_KEY_DOWN, ON_KEY_UP} from "../Constants";
-import Emitter from "../Emitter";
+import Emitter from "../emitter";
 
 type Keys = "KeyW" | "KeyS" | "KeyA" | "KeyD" | "KeyV" | "KeyF" | "Space";
 

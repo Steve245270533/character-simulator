@@ -1,6 +1,6 @@
 import {ACESFilmicToneMapping, Clock, Color, PerspectiveCamera, Scene, SRGBColorSpace, VSMShadowMap, WebGLRenderer} from "three";
 import World from "../world";
-import Emitter from "../Emitter";
+import Emitter from "../emitter";
 import Loader from "../loader";
 import Control from "../control";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";

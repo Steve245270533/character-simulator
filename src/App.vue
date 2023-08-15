@@ -22,7 +22,7 @@ import NotifyTips from "@/components/NotifyTips.vue";
 import Core from "@/application/core";
 import {onMounted, ref} from "vue";
 import {ON_INTERSECT_TRIGGER, ON_INTERSECT_TRIGGER_STOP, ON_KEY_DOWN, ON_LOAD_PROGRESS} from "@/application/Constants";
-import type {InteractionMesh} from "@/application/InteractionDetection/types";
+import type {InteractionMesh} from "@/application/interactionDetection/types";
 
 const notify_ref = ref<InstanceType<typeof NotifyTips>>();
 const game_dialog_ref = ref<InstanceType<typeof NesGameDialog>>();

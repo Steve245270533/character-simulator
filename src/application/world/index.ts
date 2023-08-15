@@ -1,12 +1,12 @@
 import Environment from "../environment";
 import Character from "../character";
-import InteractionDetection from "../InteractionDetection";
+import InteractionDetection from "../interactionDetection";
 import Audio from "../audio";
 import {PerspectiveCamera, Scene} from "three";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import Control from "../control";
 import Loader from "../loader";
-import Emitter from "../Emitter";
+import Emitter from "../emitter";
 
 interface WorldParams {
 	scene: Scene;

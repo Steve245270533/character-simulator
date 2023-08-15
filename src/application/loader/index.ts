@@ -3,7 +3,7 @@ import {FBXLoader} from "three/examples/jsm/loaders/FBXLoader";
 import {DRACOLoader} from "three/examples/jsm/loaders/DRACOLoader";
 import {AudioLoader, DefaultLoadingManager, TextureLoader} from "three";
 import {ON_LOAD_PROGRESS} from "../Constants";
-import Emitter from "../Emitter";
+import Emitter from "../emitter";
 
 interface LoaderParams {
 	emitter: Emitter;

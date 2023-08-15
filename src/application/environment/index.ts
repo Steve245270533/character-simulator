@@ -4,7 +4,7 @@ import {Scene, AmbientLight, DirectionalLight, EquirectangularReflectionMapping,
 import {Water} from "three/examples/jsm/objects/Water2";
 import type {BVHGeometry} from "../utils/typeAssert";
 import {MeshBVH, StaticGeometryGenerator, type MeshBVHOptions} from "three-mesh-bvh";
-import Emitter from "../Emitter";
+import Emitter from "../emitter";
 
 interface EnvironmentParams {
 	scene: Scene;

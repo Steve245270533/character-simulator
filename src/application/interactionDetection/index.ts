@@ -3,7 +3,7 @@ import {acceleratedRaycast, computeBoundsTree, disposeBoundsTree} from "three-me
 import {isBVHGeometry} from "../utils/typeAssert";
 import {NES_GAME_SRC1, NES_GAME_SRC2, NES_GAME_SRC3, NES_GAME_SRC4, ON_INTERSECT_TRIGGER, ON_INTERSECT_TRIGGER_STOP} from "../Constants";
 import type {InteractionMesh} from "./types";
-import Emitter from "../Emitter";
+import Emitter from "../emitter";
 
 Mesh.prototype.raycast = acceleratedRaycast;
 // @ts-ignore
