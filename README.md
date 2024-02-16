@@ -59,7 +59,6 @@ Although this project is developed using `Vue3` and `TypeScript`, the core funct
 |   |    │── LoadProgress.vue   # Loading component
 |   |    │── NesGameDialog.vue  # Nes game dialog component (run Nes games)
 |   |    └── NotifyTips.vue     # Interaction notification component
-│   ├── typings     # Type declarations
 │   ├── App.vue     # Entry page
 │   └── main.js     # Entry file (load components, global styles, initialization, etc.)
 ```

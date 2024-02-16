@@ -57,7 +57,6 @@
 |   |    │── LoadProgress.vue   # 加载组件
 |   |    │── NesGameDialog.vue  # nes游戏弹窗组件（运行nes游戏）
 |   |    └── NotifyTips.vue     # 交互提示组件
-│   ├── typings     # 类型声明
 │   ├── App.vue     # 入口页面
 │   └── main.js     # 入口文件（加载组件、全局样式、初始化等）
 ```
