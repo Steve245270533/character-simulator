@@ -66,7 +66,7 @@ Although this project is developed using `Vue3` and `TypeScript`, the core funct
 ## Donate
 Open source is not easy, your support is my continuous motivation! This project is an open source project, donations are voluntary.
 ### How to donate?
-[爱发电⚡](https://afdian.net/a/twimark)
+[爱发电⚡](https://ifdian.net/a/twimark)
 
 ## Project Setup
 
